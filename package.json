@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "export NODE_OPTIONS='--max-old-space-size=8192' && next dev",
+    "dev": "export NODE_OPTIONS='--max-old-space-size=8192' && next dev -p 3002",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.414.0",
+    "@aws-sdk/client-s3": "^3.370.0",
     "@clerk/nextjs": "^4.23.3",
     "@neondatabase/serverless": "^0.6.0",
     "@pinecone-database/doc-splitter": "^0.0.1",
@@ -26,7 +26,6 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "dotenv": "^16.3.1",
-    "drizzle-kit": "^0.19.13",
     "drizzle-orm": "^0.28.5",
     "encoding": "^0.1.13",
     "eslint": "8.48.0",
@@ -50,5 +49,8 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.19.13"
   }
 }
