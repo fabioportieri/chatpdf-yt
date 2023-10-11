@@ -1,6 +1,7 @@
+import { loadS3IntoChromaDB } from "@/lib/chroma";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { loadS3IntoPinecone } from "@/lib/pinecone";
+// import { loadS3IntoPinecone } from "@/lib/pinecone";
 import { getS3Url } from "@/lib/s3";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
@@ -15,7 +16,7 @@ export async function POST(req: Request, res: Response) {
     const body = await req.json();
     const { file_key, file_name } = body;
     console.log(file_key, file_name);
-    await loadS3IntoPinecone(file_key);
+    await loadS3IntoChromaDB(file_key);
     const chat_id = await db
       .insert(chats)
       .values({

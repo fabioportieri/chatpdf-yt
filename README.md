@@ -40,36 +40,53 @@ npx drizzle-kit push:pg
 
 errore:
 
-uploads/1697011275306CV__Portieri_Fabio.pdf CV__Portieri_Fabio.pdf
-downloading s3 into file system
-NoSuchKey: The specified key does not exist.
-    at de_NoSuchKeyRes (/home/fabio/workspace/chatpdf-yt/node_modules/@aws-sdk/client-s3/dist-cjs/protocols/Aws_restXml.js:6082:23)
-    at de_GetObjectCommandError (/home/fabio/workspace/chatpdf-yt/node_modules/@aws-sdk/client-s3/dist-cjs/protocols/Aws_restXml.js:4327:25)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async /home/fabio/workspace/chatpdf-yt/node_modules/@smithy/middleware-serde/dist-cjs/deserializerMiddleware.js:7:24
-    at async /home/fabio/workspace/chatpdf-yt/node_modules/@aws-sdk/middleware-signing/dist-cjs/awsAuthMiddleware.js:14:20
-    at async /home/fabio/workspace/chatpdf-yt/node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js:27:46
-    at async /home/fabio/workspace/chatpdf-yt/node_modules/@aws-sdk/middleware-flexible-checksums/dist-cjs/flexibleChecksumsMiddleware.js:57:20
-    at async /home/fabio/workspace/chatpdf-yt/node_modules/@aws-sdk/middleware-logger/dist-cjs/loggerMiddleware.js:7:26
-    at async eval (webpack-internal:///(rsc)/./src/lib/s3-server.ts:25:25) {
-  '$fault': 'client',
-  '$metadata': {
-    httpStatusCode: 404,
-    requestId: '8VY3Y1R9HEEDFPR1',
-    extendedRequestId: 'll4I5gE0P0JwxgRjUqnLylRwNuDQOGPq20m4btZP4n1RvAIbHnaRcVFikg221Estq8SOaGdbK+U=',
-    cfId: undefined,
-    attempts: 1,
-    totalRetryDelay: 0
-  },
-  Code: 'NoSuchKey',
-  Key: 'uploads/1697011275306CV__Portieri_Fabio.pdf',
-  RequestId: '8VY3Y1R9HEEDFPR1',
-  HostId: 'll4I5gE0P0JwxgRjUqnLylRwNuDQOGPq20m4btZP4n1RvAIbHnaRcVFikg221Estq8SOaGdbK+U='
-}
-NoSuchKey: The specified key does not exist.
+PineconeBadRequestError: The requested feature 'Namespaces' is not supported by the current index type 'Starter'.
 
-infatti nel bucket non ha mai fatto l'upload..
+pinecone 70 euro al mese.. fai switch su chroma   https://github.com/chroma-core/chroma
 
-    "@aws-sdk/client-s3": "^3.414.0",
+<!-- https://github.com/chroma-core/chroma/blob/main/examples/chat_with_your_documents/main.py
+ https://docs.trychroma.com/usage-guide?lang=js -->
 
-    Module not found: Can't resolve '@aws-sdk/signature-v4-crt' in '/home/fabio/workspace/chatpdf-yt/node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs'
+ TODO in chroma.ts aggiungi documents alla collection
+ TODO in context.ts query collection
+
+
+ The length of the name must be between 3 and 63 characters.
+The name must start and end with a lowercase letter or a digit, and it can contain dots, dashes, and underscores in between.
+The name must not contain two consecutive dots.
+The name must not be a valid IP address.
+
+TODO dove setto il persist directory?? DEVO lanciare un chroma backend server con docker
+e poi lanciarlo con chroma run --path /db_path
+
+aggiorno langchain da "langchain": "^0.0.150", a "langchain": "^0.0.165",
+
+
+https://stackoverflow.com/questions/76749728/how-chromadb-querying-system-works
+https://github.com/langchain-ai/langchain/issues/6046
+
+
+
+docker pull chromadb/chroma
+docker run -p 8000:8000 chromadb/chroma
+
+
+
+
+./node_modules/pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js:17378:9
+Module not found: Can't resolve 'fs'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/langchain/dist/document_loaders/fs/pdf.js
+./node_modules/langchain/document_loaders/fs/pdf.js
+
+https://stackoverflow.com/questions/76353315/how-to-fix-fs-module-not-found-error-when-using-langchain-document-loaders-in
+
+il problema era l'edge runtime:
+// export const runtime = "edge";
+su chat/route.ts, che a sua volta chiama il chroma.ts, pero' togliendolo ho errori strani:
+
+./node_modules/chromadb/dist/module/embeddings/WebAIEmbeddingFunction.js
+Module not found: Can't resolve '@visheratin/web-ai-node/multimodal' in '/home/fabio/workspace/chatpdf-yt/node_modules/chromadb/dist/module/embeddings'
