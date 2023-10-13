@@ -5,7 +5,9 @@ import { UUID } from "crypto";
 import { NextResponse } from "next/server";
 
 export type LoadPdfPayload = {
-  file: File;
+  buffer: Buffer;
+  filename: string;
+  mimetype: string;
   id: UUID;
   callback: string;
   accessToken: string;
@@ -13,10 +15,11 @@ export type LoadPdfPayload = {
 
 export async function POST(req: Request, res: Response) {
   console.log("/load-pdf!");
-  const { file, id, callback, accessToken } = await req.json();
+  const { buffer, filename, mimetype, id, callback, accessToken } =
+    await req.json();
   console.log(
-    "🚀 ~ file: route.ts:15 ~ POST ~ file, id, callback, accessToken:",
-    file,
+    "🚀 ~ file: route.ts:15 ~ POST ~ buffer, id, callback, accessToken:",
+    buffer,
     id,
     callback,
     accessToken
@@ -45,7 +48,8 @@ export async function POST(req: Request, res: Response) {
   }
 
   // Validate the file
-  if (!validatePDFFile(file)) {
+  const file = validatePDFFile(buffer, filename, mimetype);
+  if (!file) {
     return NextResponse.json({ error: "Invalid PDF file" }, { status: 400 });
   }
 
@@ -157,21 +161,33 @@ function isValidUUID(id: UUID): boolean {
   return true; // Modify this based on your actual validation logic
 }
 
-function validatePDFFile(file: File): boolean {
+function validatePDFFile(
+  buf: Buffer,
+  filename: string,
+  mimetype: string
+): File | null {
   // Check if the file is not null
-  if (!file) {
-    return false;
+  if (!buf) {
+    return null;
   }
+
+  // TODO convert Buffer to File
+  const blob = new Blob([buf]);
+  //   const fileName = 'example.pdf'; // Replace with your desired file name
+  //     const fileType = 'application/pdf'; // Replace with the appropriate MIME type
+
+  // Create a File from the Blob
+  const file = new File([blob], filename, { type: mimetype });
 
   // Check if the file type is PDF
   if (file.type !== "application/pdf") {
-    return false;
+    return null;
   }
 
-  // Check if the file size is within the allowed range (0 - 100MB)
+  //   // Check if the file size is within the allowed range (0 - 100MB)
   if (file.size <= 0 || file.size > 100 * 1024 * 1024) {
-    return false;
+    return null;
   }
 
-  return true;
+  return file;
 }
