@@ -2,12 +2,14 @@
 
 [Link to YouTube Tutorial](https://www.youtube.com/watch?v=bZFedu-0emE)
 
-
 neon database, con account google
 
 https://console.neon.tech/app/projects/polished-truth-71933130
 
 // jdbc:postgresql://ep-holy-night-84572506-pooler.eu-central-1.aws.neon.tech/neondb?user=fazfazzi&password=N7ErAT9jPQvx
+NUTPROJECT_ACCESS_TOKEN_PLAIN=AccessTokenNut-Project83482-1
+NUTPROJECT_ACCESS_TOKEN_SECRET=r3Ej7dJ3SJ0ugQ45
+
 <!-- PGHOST='ep-holy-night-84572506-pooler.eu-central-1.aws.neon.tech'
 PGDATABASE='neondb'
 PGUSER='fazfazzi'
@@ -29,29 +31,25 @@ datasource db {
   // shadowDatabaseUrl = env(“SHADOW_DATABASE_URL”)
 } -->
 
-
 creato bucket s3 e access token, pinecode, clerk
 pinecode host: https://chatpdf-59bcc79.svc.gcp-starter.pinecone.io
 
-
 // npx drizzle-kit generate:pg --config=drizzle.config.ts
 npx drizzle-kit push:pg
-
 
 errore:
 
 PineconeBadRequestError: The requested feature 'Namespaces' is not supported by the current index type 'Starter'.
 
-pinecone 70 euro al mese.. fai switch su chroma   https://github.com/chroma-core/chroma
+pinecone 70 euro al mese.. fai switch su chroma https://github.com/chroma-core/chroma
 
 <!-- https://github.com/chroma-core/chroma/blob/main/examples/chat_with_your_documents/main.py
  https://docs.trychroma.com/usage-guide?lang=js -->
 
- TODO in chroma.ts aggiungi documents alla collection
- TODO in context.ts query collection
+TODO in chroma.ts aggiungi documents alla collection
+TODO in context.ts query collection
 
-
- The length of the name must be between 3 and 63 characters.
+The length of the name must be between 3 and 63 characters.
 The name must start and end with a lowercase letter or a digit, and it can contain dots, dashes, and underscores in between.
 The name must not contain two consecutive dots.
 The name must not be a valid IP address.
@@ -61,17 +59,11 @@ e poi lanciarlo con chroma run --path /db_path
 
 aggiorno langchain da "langchain": "^0.0.150", a "langchain": "^0.0.165",
 
-
 https://stackoverflow.com/questions/76749728/how-chromadb-querying-system-works
 https://github.com/langchain-ai/langchain/issues/6046
 
-
-
 docker pull chromadb/chroma
 docker run -p 8000:8000 chromadb/chroma
-
-
-
 
 ./node_modules/pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js:17378:9
 Module not found: Can't resolve 'fs'
