@@ -15,11 +15,10 @@ export type LoadPdfPayload = {
 
 export async function POST(req: Request, res: Response) {
   console.log("/load-pdf!");
-  const { buffer, filename, mimetype, id, callback, accessToken } =
+  const { file, filename, mimetype, id, callback, accessToken } =
     await req.json();
   console.log(
-    "🚀 ~ file: route.ts:15 ~ POST ~ buffer, id, callback, accessToken:",
-    buffer,
+    "🚀 ~ file: route.ts:15 ~ POST ~  id, callback, accessToken:",
     id,
     callback,
     accessToken
@@ -34,6 +33,8 @@ export async function POST(req: Request, res: Response) {
     );
   }
 
+  console.log("🚀 ~ file: route.ts:36 ~ POST ~ accessTokenDecrypted valid!")
+
   // Validate the callback
   if (!isValidCallback(callback)) {
     return NextResponse.json(
@@ -41,25 +42,28 @@ export async function POST(req: Request, res: Response) {
       { status: 400 }
     );
   }
+  console.log("🚀 ~ file: route.ts:36 ~ POST ~ callback valid!")
 
   // Validate the id (UUID)
   if (!isValidUUID(id)) {
     return NextResponse.json({ error: "Invalid UUID" }, { status: 400 });
   }
 
+  console.log("🚀 ~ file: route.ts:36 ~ POST ~ uuid valid!")
+
   // Validate the file
-  const file = validatePDFFile(buffer, filename, mimetype);
-  if (!file) {
+  const pdfFile = validatePDFFile(file, filename, mimetype);
+  if (!pdfFile) {
     return NextResponse.json({ error: "Invalid PDF file" }, { status: 400 });
   }
-
-  runJob(file, id, accessToken, callback);
+  console.log("🚀 ~ file: route.ts:36 ~ POST ~ pdf valid valid!")
+  runJob(pdfFile, id, accessToken, callback);
 
   return NextResponse.json({ success: true }, { status: 200 });
 }
 
 async function runJob(
-  file: File,
+  file: NodeFile,
   id: UUID,
   accessToken: string,
   callback: string
@@ -161,24 +165,49 @@ function isValidUUID(id: UUID): boolean {
   return true; // Modify this based on your actual validation logic
 }
 
+// TODO errore qui:
 function validatePDFFile(
-  buf: Buffer,
+  buff: string,
   filename: string,
   mimetype: string
-): File | null {
+): NodeFile | null {
+
+  console.log('It is a string: ', buff.substring(0, 45));
+  // if (typeof buff === 'string') {
+  //   // It's a string SI e' STRINGA
+  //   console.log('It is a string');
+  // } else if (Buffer.isBuffer(buff)) {
+  //   // It's a Buffer
+  //   console.log('It is a Buffer');
+  // } else if (buff instanceof File) {
+  //   // It might be a File (you should define the File class)
+  //   console.log('It is a File');
+  // } else {
+  //   // None of the above
+  //   console.log('It is of an unknown type');
+  // }
+
+
   // Check if the file is not null
-  if (!buf) {
+  if (!buff) {
     return null;
   }
 
+
+
+  const buf = Buffer.from(buff, 'base64');
+  console.log("🚀 ~ file: route.ts:180 ~ buf created");
   // TODO convert Buffer to File
   const blob = new Blob([buf]);
-  //   const fileName = 'example.pdf'; // Replace with your desired file name
-  //     const fileType = 'application/pdf'; // Replace with the appropriate MIME type
+  console.log("🚀 ~ file: route.ts:180 ~ BLOB created");
 
-  // Create a File from the Blob
-  const file = new File([blob], filename, { type: mimetype });
+  // Create a File from the Blob error ReferenceError: File is not defined !! non posso usare File ma fs module
 
+  // const file = new File([blob], filename, { type: mimetype });
+  const file = new NodeFile(blob, filename, { type: mimetype });
+
+
+  console.log("🚀 ~ file: route.ts:180 ~ FILE created");
   // Check if the file type is PDF
   if (file.type !== "application/pdf") {
     return null;
@@ -190,4 +219,26 @@ function validatePDFFile(
   }
 
   return file;
+}
+
+
+export class NodeFile {
+  blob: Blob;
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+
+  constructor(blob: Blob, name: string, options: { type?: string; lastModified?: number } = {}) {
+    // super([blob], name, options);
+    this.blob = blob;
+    this.name = name;
+    this.size = blob.size;
+    this.type = options.type || '';
+    this.lastModified = options.lastModified || Date.now();
+  }
+
+  arrayBuffer(): Promise<ArrayBuffer> {
+    return this.blob.arrayBuffer();
+  }
 }

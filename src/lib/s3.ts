@@ -1,6 +1,7 @@
+import { NodeFile } from "@/app/api/load-pdf/route";
 import { PutObjectCommandOutput, S3 } from "@aws-sdk/client-s3";
 // import { FetchHttpHandler } from "@smithy/fetch-http-handler";
-export async function uploadToS3(file: File): Promise<{ file_key: string; file_name: string }> {
+export async function uploadToS3(file: File | NodeFile): Promise<{ file_key: string; file_name: string }> {
   try {
     const s3 = new S3({
       region: "eu-north-1",
@@ -16,7 +17,7 @@ export async function uploadToS3(file: File): Promise<{ file_key: string; file_n
     const params = {
       Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
       Key: file_key,
-      Body: file,
+      Body: file as File,
     };
 
     const data: PutObjectCommandOutput = await s3.putObject(params);
