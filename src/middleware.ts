@@ -17,8 +17,8 @@ import { NextResponse } from "next/server";
 export function middleware(request: { headers: HeadersInit | undefined }) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const cspHeader = `
-    default-src 'self' https://chatpdf-buck.s3.eu-north-1.amazonaws.com;
-    frame-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://chatpdf-buck.s3.eu-north-1.amazonaws.com https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.1.266/pdf.worker.js http://localhost:3002;
+    default-src 'self' blob: https://chatpdf-buck.s3.eu-north-1.amazonaws.com;
+    frame-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://docs.google.com https://chatpdf-buck.s3.eu-north-1.amazonaws.com https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.1.266/pdf.worker.js http://localhost:3002;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://chatpdf-buck.s3.eu-north-1.amazonaws.com https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.1.266/pdf.worker.js http://localhost:3002/*;
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;

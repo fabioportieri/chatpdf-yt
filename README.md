@@ -90,12 +90,6 @@ il problema era l'edge runtime:
 // export const runtime = "edge";
 su chat/route.ts, che a sua volta chiama il chroma.ts, pero' togliendolo ho errori strani:
 
-./node_modules/chromadb/dist/module/embeddings/WebAIEmbeddingFunction.js
-Module not found: Can't resolve '@visheratin/web-ai-node/multimodal' in '/home/fabio/workspace/chatpdf-yt/node_modules/chromadb/dist/module/embeddings'
 
-chiamata a webhook: data: 'An expected CSRF token cannot be found'
 
-anche da postman
-/services/nutcore/api/chatpdf/webhook
-
-risolto, ma il webhook arriva con result null
+TODO nut-fe, mettere progress, e non mi ha fatto il polling da linux dopo il caricamento del file

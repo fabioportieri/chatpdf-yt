@@ -47,7 +47,7 @@ export async function loadS3IntoChromaDB(fileKey: string) {
   for (const [index, document] of documents.flat().entries()) {
     try {
       const result = await embedDocument(document);
-      vectorsWrapper.push(result);
+      if (result) vectorsWrapper.push(result);
     } catch (error) {
       console.error(`Error embedding document: ${(error as Error).message}`);
       throw new Error(`could not embed documents, failed at ${index} entry`);
@@ -114,10 +114,11 @@ async function embedDocument(doc: Document) {
     } as ChromaDBRecord;
   } catch (error) {
     // embeddings undefined?
-    console.log("error embedding document, document: ", doc);
-    console.log("error embedding document, doc.pageContent: ", doc.pageContent);
+    // console.log("error embedding document, document: ", doc);
+    // console.log("error embedding document, doc.pageContent: ", doc.pageContent);
     console.log("error embedding document, error: ", error);
-    throw error;
+    return null;
+    // throw error;
   }
 }
 
