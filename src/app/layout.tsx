@@ -1,9 +1,7 @@
-import "./globals.css";
+import Providers from "@/components/Providers";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import Providers from "@/components/Providers";
-import { Toaster } from "react-hot-toast";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,13 +15,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <Providers>
-        <html lang="en">
-          <body className={inter.className}>{children}</body>
-          <Toaster />
-        </html>
-      </Providers>
-    </ClerkProvider>
+    // <ClerkProvider>
+    <Providers>
+      <html lang="en">
+        {/* <head>
+            <meta
+              http-equiv="Content-Security-Policy"
+              content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com"
+            />
+          </head> */}
+        <body className={inter.className}>
+          {children}
+          {/* <Toaster /> */}
+        </body>
+      </html>
+    </Providers>
+    // </ClerkProvider>
   );
 }

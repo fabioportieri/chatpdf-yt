@@ -1,12 +1,12 @@
 "use client";
-import { uploadToS3 } from "@/lib/s3";
+import { uploadToS3Client } from "@/lib/s3-upload-client";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { Inbox, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 // https://github.com/aws/aws-sdk-js-v3/issues/4126
 
@@ -42,7 +42,7 @@ const FileUpload = () => {
 
       try {
         setUploading(true);
-        const data = await uploadToS3(file);
+        const data = await uploadToS3Client(file);
         console.log("meow", data);
         if (!data?.file_key || !data.file_name) {
           toast.error("Something went wrong");

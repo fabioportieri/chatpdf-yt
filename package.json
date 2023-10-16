@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "export NODE_OPTIONS='--max-old-space-size=8192' && next dev -p 3002",
+    "dev": "set NODE_OPTIONS=--max-old-space-size=8192 && next dev -p 3002",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "chromadb": "docker pull chromadb/chroma && docker run -p 8000:8000 chromadb/chroma"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.427.0",
@@ -45,6 +46,7 @@
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hot-toast": "^2.4.1",
+    "react-pdf-js": "^5.1.0",
     "stream": "^0.0.2",
     "stripe": "^13.4.0",
     "tailwind-merge": "^1.14.0",

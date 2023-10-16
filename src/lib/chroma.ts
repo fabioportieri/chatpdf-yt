@@ -1,18 +1,18 @@
 // import { Pinecone, PineconeRecord } from "@pinecone-database/pinecone";
 import * as chromadb from "chromadb";
-import { downloadFromS3 } from "./s3-server";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import md5 from "md5";
+import { downloadFromS3 } from "./s3-server";
 // import {
 //   Document,
 //   RecursiveCharacterTextSplitter,
 // } from "@pinecone-database/doc-splitter";
 
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { Document } from "langchain/document";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 import { getEmbeddings } from "./embeddings";
-import { convertToAscii } from "./utils";
+import { FILE_KEY_SEPARATOR, convertToAscii } from "./utils";
 
 export const getChromaClient = () => {
   // return new chromadb.ChromaClient({
@@ -43,41 +43,65 @@ export async function loadS3IntoChromaDB(fileKey: string) {
   const documents = await Promise.all(pages.map(prepareDocument));
 
   // 3. vectorise and embed individual documents
-  const vectorsWrapper = await Promise.all(documents.flat().map(embedDocument));
+  const vectorsWrapper = [];
+  for (const [index, document] of documents.flat().entries()) {
+    try {
+      const result = await embedDocument(document);
+      vectorsWrapper.push(result);
+    } catch (error) {
+      console.error(`Error embedding document: ${(error as Error).message}`);
+      throw new Error(`could not embed documents, failed at ${index} entry`);
+    }
+  }
 
+  // TODO crea una collection name anche se non viene da NUTPROJECT ! (standalone)
   // 4. upload to chromadb
   const client = getChromaClient();
+  const collectionName = fileKey.split(FILE_KEY_SEPARATOR)[1];
+  console.log(
+    "🚀 ~ file: chroma.ts:60 ~ looking for collection:",
+    collectionName
+  );
 
-  // const pineconeIndex = await client.index("chatpdf");
-  // const namespace = pineconeIndex.namespace(convertToAscii(fileKey));
-  // console.log("inserting vectors into pinecone");
-  // await namespace.upsert(vectors);
-  // TODO create collection https://docs.trychroma.com/usage-guide?lang=js
+  try {
+    let collFound = await client.getCollection({ name: collectionName });
+    if (collFound) await client.deleteCollection({ name: collectionName });
+  } catch (error) {
+    console.log("collection does not exists, no need to delete it");
+  }
+
+  // create collection https://docs.trychroma.com/usage-guide?lang=js
 
   let collection = await client.createCollection({
-    name: 'ciccio3',
+    name: collectionName,
     metadata: { "hnsw:space": "cosine" },
   });
-  console.log("🚀 loadS3IntoChromaDB ~ collection:", collection, " with name ", convertToAscii(fileKey));
+  console.log(
+    "🚀 loadS3IntoChromaDB ~ collection:",
+    collection,
+    " with name ",
+    convertToAscii(fileKey)
+  );
 
   // TODO add
   await collection.add({
     // ids: ["id1", "id2", "id3", ...],
     // embeddings: [[1.1, 2.3, 3.2], [4.5, 6.9, 4.4], [1.1, 2.3, 3.2], ...],
     // metadatas: [{"chapter": "3", "verse": "16"}, {"chapter": "3", "verse": "5"}, {"chapter": "29", "verse": "11"}, ...],
-    ids: vectorsWrapper.map(vector => vector.id),
-    embeddings: vectorsWrapper.map(vector => vector.embeddings),
-    metadatas: vectorsWrapper.map(vector => vector.metadata),
-    documents: documents.flat().map(doc => doc.pageContent)
-  })
+    ids: vectorsWrapper.map((vector) => vector.id),
+    embeddings: vectorsWrapper.map((vector) => vector.embeddings),
+    metadatas: vectorsWrapper.map((vector) => vector.metadata),
+    documents: documents.flat().map((doc) => doc.pageContent),
+  });
 
-
+  console.log("collection added embeddings: ", documents);
   return documents[0];
 }
 
 async function embedDocument(doc: Document) {
+  let embeddings;
   try {
-    const embeddings = await getEmbeddings(doc.pageContent);
+    embeddings = await getEmbeddings(doc.pageContent);
     const hash = md5(doc.pageContent);
 
     return {
@@ -89,7 +113,10 @@ async function embedDocument(doc: Document) {
       },
     } as ChromaDBRecord;
   } catch (error) {
-    console.log("error embedding document", error);
+    // embeddings undefined?
+    console.log("error embedding document, document: ", doc);
+    console.log("error embedding document, doc.pageContent: ", doc.pageContent);
+    console.log("error embedding document, error: ", error);
     throw error;
   }
 }
@@ -119,5 +146,5 @@ async function prepareDocument(page: PDFPage): Promise<Document[]> {
 export interface ChromaDBRecord {
   id: string;
   embeddings: number[];
-  metadata: any
+  metadata: any;
 }

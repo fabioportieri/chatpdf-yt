@@ -1,7 +1,12 @@
-import { NodeFile } from "@/app/api/load-pdf/route";
 import { PutObjectCommandOutput, S3 } from "@aws-sdk/client-s3";
+import { FILE_KEY_SEPARATOR } from "./utils";
 // import { FetchHttpHandler } from "@smithy/fetch-http-handler";
-export async function uploadToS3(file: File | NodeFile): Promise<{ file_key: string; file_name: string }> {
+
+// TODO make it DRY with s3-upload-client, had to split since Can't use Buffer in browser and can't use File in server nodejs !
+
+export async function uploadToS3Client(
+  file: File
+): Promise<{ file_key: string; file_name: string }> {
   try {
     const s3 = new S3({
       region: "eu-north-1",
@@ -12,17 +17,23 @@ export async function uploadToS3(file: File | NodeFile): Promise<{ file_key: str
       // requestHandler: new FetchHttpHandler({ keepAlive: false }) // https://github.com/aws/aws-sdk-js-v3/issues/5334
     });
 
-    const file_key = "uploads/" + Date.now().toString() + file.name.replace(" ", "-");
+    const file_key =
+      "uploads/" +
+      Date.now().toString() +
+      FILE_KEY_SEPARATOR +
+      file.name.replace(" ", "-");
+
+    let bodyFile: File = file;
 
     const params = {
       Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
       Key: file_key,
-      Body: file as File,
+      Body: bodyFile,
     };
 
     const data: PutObjectCommandOutput = await s3.putObject(params);
 
-    console.log("🚀 ~ file: s3.ts:23 ~ uploadToS3 ~ data:", data)
+    console.log("🚀 ~ file: s3.ts:23 ~ uploadToS3 ~ data:", data);
     return {
       file_key,
       file_name: file.name,

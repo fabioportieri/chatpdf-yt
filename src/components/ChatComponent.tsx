@@ -1,13 +1,13 @@
 "use client";
-import React from "react";
-import { Input } from "./ui/input";
-import { useChat } from "ai/react";
-import { Button } from "./ui/button";
-import { Send } from "lucide-react";
-import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Message } from "ai";
+import { useChat } from "ai/react";
+import axios from "axios";
+import { Send } from "lucide-react";
+import React from "react";
+import MessageList from "./MessageList";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 type Props = { chatId: number };
 
@@ -59,7 +59,7 @@ const ChatComponent = ({ chatId }: Props) => {
             placeholder="Ask any question..."
             className="w-full"
           />
-          <Button className="bg-blue-600 ml-2">
+          <Button className="bg-pink-600 ml-2">
             <Send className="h-4 w-4" />
           </Button>
         </div>

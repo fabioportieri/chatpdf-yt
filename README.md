@@ -65,6 +65,16 @@ https://github.com/langchain-ai/langchain/issues/6046
 docker pull chromadb/chroma
 docker run -p 8000:8000 chromadb/chroma
 
+https://github.com/chroma-core/chroma/blob/main/README.md
+
+persist directory: /chroma/chroma dentro il container docker
+
+git clone https://github.com/Pawandeep-prog/chroma-peek.git
+pip install -r requirements.txt
+streamlit run chroma-peek/main.py
+
+dockerizza chromadb e chroma-peek dentro docker compose
+
 ./node_modules/pdf-parse/lib/pdf.js/v1.10.100/build/pdf.js:17378:9
 Module not found: Can't resolve 'fs'
 
@@ -83,8 +93,7 @@ su chat/route.ts, che a sua volta chiama il chroma.ts, pero' togliendolo ho erro
 ./node_modules/chromadb/dist/module/embeddings/WebAIEmbeddingFunction.js
 Module not found: Can't resolve '@visheratin/web-ai-node/multimodal' in '/home/fabio/workspace/chatpdf-yt/node_modules/chromadb/dist/module/embeddings'
 
-
-chiamata a webhook:   data: 'An expected CSRF token cannot be found'
+chiamata a webhook: data: 'An expected CSRF token cannot be found'
 
 anche da postman
 /services/nutcore/api/chatpdf/webhook
