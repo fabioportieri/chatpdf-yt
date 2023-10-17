@@ -11,6 +11,9 @@ type Props = {
   };
 };
 
+export const dynamic = "auto";
+export const fetchCache = "force-no-store"; // NECESSARIO ALTRIMENTI DB PRENDE DATI VECCHI
+
 const EmbeddedChatPage = async ({ params: { chatId } }: Props) => {
   const chat = await db
     .select()
@@ -24,17 +27,25 @@ const EmbeddedChatPage = async ({ params: { chatId } }: Props) => {
   const userId = chat[0].userId;
   const file_key = chat[0].fileKey;
 
-  // should work with "eq", using "ilike" for this bug:
+  // should work with "eq", using "ilike" for this bug, prob. era solo problema di cache, togli TODO
   // https://stackoverflow.com/questions/71295272/where-on-normal-varchar-column-fails-for-some-values-but-works-with-trim-lower
   const _chats = await db
     .select()
     .from(chats)
-    .where(ilike(chats.userId, userId));
+    .where(ilike(chats.userId, "%" + userId.trim() + "%"));
   if (!_chats) {
     console.error("no chat found on with userId ", userId);
     return redirect("/error");
   }
   if (!_chats.find((chat) => chat.id === parseInt(chatId))) {
+    // console.error(
+    //   "no chat id found: ",
+    //   chatId,
+    //   " in user chats:",
+    //   _chats,
+    //   "for userId:",
+    //   userId
+    // );
     return redirect("/error");
   }
 
