@@ -1,22 +1,18 @@
 import { NodeFile } from "@/app/api/load-pdf/route";
 import { PutObjectCommandOutput, S3 } from "@aws-sdk/client-s3";
+
 import { FILE_KEY_SEPARATOR } from "./utils";
-// import { FetchHttpHandler } from "@smithy/fetch-http-handler";
+import Minio, { UploadedObjectInfo } from 'minio';
+import { MINIO_BUCKET_NAME, minioClient } from "./minio";
 
-// TODO make it DRY with s3-upload-client, had to split since Can't use Buffer in browser and can't use File in server nodejs !
+// https://github.com/minio/minio-js
+// https://min.io/docs/minio/linux/developers/javascript/API.html
 
-export async function uploadToS3Server(
-  file: NodeFile
+
+export async function uploadToMinioServer(
+  file: NodeFile | File
 ): Promise<{ file_key: string; file_name: string }> {
   try {
-    const s3 = new S3({
-      region: "eu-north-1",
-      credentials: {
-        accessKeyId: process.env.NEXT_PUBLIC_S3_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY!,
-      },
-      // requestHandler: new FetchHttpHandler({ keepAlive: false }) // https://github.com/aws/aws-sdk-js-v3/issues/5334
-    });
 
     const file_key =
       "uploads/" +
@@ -26,26 +22,21 @@ export async function uploadToS3Server(
 
     let bodyFile: Buffer = Buffer.from(await file.arrayBuffer());
 
-    const params = {
-      Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
-      Key: file_key,
-      Body: bodyFile,
-    };
+    // https://min.io/docs/minio/linux/developers/javascript/API.html#putObject
+    // putObject(bucketName: string, objectName: string, stream: ReadableStream | Buffer | string, metaData?: ItemBucketMetadata): Promise<UploadedObjectInfo>;
+    // fPutObject(bucketName: string, objectName: string, filePath: string, metaData?: ItemBucketMetadata): Promise<UploadedObjectInfo>;
+    const data: UploadedObjectInfo = await minioClient.putObject(MINIO_BUCKET_NAME, file_key, bodyFile);
+    
 
-    const data: PutObjectCommandOutput = await s3.putObject(params);
-
-    console.log("🚀 ~ file: s3.ts:23 ~ uploadToS3 ~ data:", data);
+    console.log("🚀 ~ uploadToMINIO ~ data:", data);
     return {
       file_key,
       file_name: file.name,
     };
   } catch (error) {
-    console.error("Error uploading to S3:", error);
+    console.error("Error uploading to Minio:", error);
     throw error; // Rethrow the error for further handling
   }
 }
 
-export function getS3Url(file_key: string) {
-  const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.eu-north-1.amazonaws.com/${file_key}`;
-  return url;
-}
+
