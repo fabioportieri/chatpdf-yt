@@ -18,7 +18,7 @@ export const getChromaClient = () => {
   // return new chromadb.ChromaClient({
   //   path: process.env.NEXT_BASE_URL
   // });
-  return new chromadb.ChromaClient();
+  return new chromadb.ChromaClient({ path: 'http://localhost:8001' });
 };
 
 type PDFPage = {

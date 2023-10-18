@@ -1,7 +1,6 @@
 "use client";
-// import { uploadToMinioServer } from "@/lib/minio-upload";
-import { uploadToMinioClient } from "@/lib/minio-upload-client";
-// import { uploadToS3Client } from "@/lib/s3-upload-client";
+
+import { uploadToMinioServer } from "@/lib/minio-upload";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Inbox, Loader2 } from "lucide-react";
@@ -15,21 +14,36 @@ import { toast } from "react-hot-toast";
 const FileUpload = () => {
   const router = useRouter();
   const [uploading, setUploading] = React.useState(false);
-  const { mutate, isLoading } = useMutation({
-    mutationFn: async ({
-      file_key,
-      file_name,
-    }: {
-      file_key: string;
-      file_name: string;
-    }) => {
-      const response = await axios.post("/api/create-chat", {
+  const { mutate: mutateCreateChat, isLoading: isLoadingCreateChat } =
+    useMutation({
+      mutationFn: async ({
         file_key,
         file_name,
+      }: {
+        file_key: string;
+        file_name: string;
+      }) => {
+        const response = await axios.post("/api/create-chat", {
+          file_key,
+          file_name,
+        });
+        return response.data;
+      },
+    });
+
+  const { mutate: mutateUploadPdf, isLoading: isLoadingUploadPdf } =
+    useMutation({
+      mutationFn: async (file: File) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await axios.post("/api/upload-pdf", formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
       });
-      return response.data;
-    },
-  });
+        return response.data;
+      },
+    });
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "application/pdf": [".pdf"] },
@@ -44,19 +58,31 @@ const FileUpload = () => {
 
       try {
         setUploading(true);
-        const data = await uploadToMinioClient(file);
-        console.log("meow", data);
-        if (!data?.file_key || !data.file_name) {
-          toast.error("Something went wrong");
-          return;
-        }
-        mutate(data, {
-          onSuccess: ({ chat_id }) => {
-            toast.success("Chat created!");
-            router.push(`/chat/${chat_id}`);
+
+        mutateUploadPdf(file, {
+          onSuccess: ({data}) => {
+            console.log("meow", data);
+            // questa IF mi va uscire??
+            if (!data?.file_key || !data?.file_name) {
+              toast.error("Something went wrong");
+              return;
+            }
+            mutateCreateChat(
+              { file_key: data?.file_key, file_name: data?.file_name },
+              {
+                onSuccess: ({ chat_id }) => {
+                  toast.success("Chat created!");
+                  router.push(`/chat/${chat_id}`);
+                },
+                onError: (err) => {
+                  toast.error("Error creating chat");
+                  console.error(err);
+                },
+              }
+            );
           },
           onError: (err) => {
-            toast.error("Error creating chat");
+            toast.error("Error uploading pdf");
             console.error(err);
           },
         });
@@ -76,7 +102,7 @@ const FileUpload = () => {
         })}
       >
         <input {...getInputProps()} />
-        {uploading || isLoading ? (
+        {uploading || isLoadingCreateChat || isLoadingUploadPdf ? (
           <>
             {/* loading state */}
             <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />

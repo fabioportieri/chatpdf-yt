@@ -98,5 +98,4 @@ TODO nut-fe, mettere progress, e non mi ha fatto il polling da linux dopo il car
 tool per risolvere dip. circolari: 
 dpdm src/lib/minio-upload.ts
 
-
-niente, l'unica e' creare una api per l upload sul minio, minio non e' compatibile con i client component
+problema con il filename collection...

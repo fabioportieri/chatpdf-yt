@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prepareChat } from "./prepare-chat";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { auth } from "@/lib/auth";
 import { NextApiRequest, NextApiResponse } from "next";
 // TODO NEXTAUTH

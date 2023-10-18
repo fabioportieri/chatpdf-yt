@@ -1,8 +1,9 @@
-import { Client } from 'minio';
+// import { Client } from 'minio';
+import * as Minio from 'minio';
 
 export const MINIO_BUCKET_NAME = process.env.MINIO_BUCKET_NAME!;
 
-export const minioClient = new Client({
+export const minioClient = new Minio.Client({
   endPoint: process.env.MINIO_ENDPOINT!,
   port: +process.env.MINIO_PORT!,
   useSSL: process.env.MINIO_USESSL === 'true',

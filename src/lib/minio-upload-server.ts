@@ -1,32 +1,32 @@
 
 import { FILE_KEY_SEPARATOR } from "./utils";
-import { Client, UploadedObjectInfo } from 'minio';
-// import { MINIO_BUCKET_NAME, NodeFile, minioClient } from "./minio";
+import * as minio from "minio";
+import { MINIO_BUCKET_NAME, NodeFile, minioClient } from "./minio";
 
 // https://github.com/minio/minio-js
 // https://min.io/docs/minio/linux/developers/javascript/API.html
 
 
-export async function uploadToMinioClient(
-  file: File
+export async function uploadToMinioServer(
+  { buffer, filename }: { buffer: Buffer, filename: string }
 ): Promise<{ file_key: string; file_name: string }> {
   try {
 
     const file_key =
       "uploads/" +
-      Date.now().toString() +
+      // Date.now().toString() +
       FILE_KEY_SEPARATOR +
-      file.name.replace(" ", "-");
+      filename.replace(" ", "-");
 
-    let bodyFile: Buffer = Buffer.from(await file.arrayBuffer());
+    // let bodyFile: Buffer = Buffer.from(await file.arrayBuffer());
 
-    console.log("🚀 ~ uploadToMINIO ~ upload file_key:", file_key, "buffer length:", bodyFile.length);
+    console.log("🚀 ~ uploadToMINIO ~ upload file_key:", file_key, "buffer length:", buffer.length, "filename", filename);
 
     // https://min.io/docs/minio/linux/developers/javascript/API.html#putObject
     // putObject(bucketName: string, objectName: string, stream: ReadableStream | Buffer | string, metaData?: ItemBucketMetadata): Promise<UploadedObjectInfo>;
     // fPutObject(bucketName: string, objectName: string, filePath: string, metaData?: ItemBucketMetadata): Promise<UploadedObjectInfo>;
 
-    const client = new Client({
+    const client = new minio.Client({
       endPoint: 'localhost',
       port: 9040,
       useSSL: false,
@@ -36,14 +36,14 @@ export async function uploadToMinioClient(
 
 
 
-    const data: UploadedObjectInfo = await client.putObject("chatpdf-bucket", file_key, bodyFile);
-    // const data = null;
+    const data = await client.putObject(MINIO_BUCKET_NAME, file_key, buffer);
+
 
 
     console.log("🚀 ~ uploadToMINIO ~ data:", data);
     return {
       file_key,
-      file_name: file.name,
+      file_name: filename,
     };
   } catch (error) {
     console.error("Error uploading to Minio:", error);

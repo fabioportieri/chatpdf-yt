@@ -1,6 +1,6 @@
 
 import { FILE_KEY_SEPARATOR } from "./utils";
-import { Client, UploadedObjectInfo } from 'minio';
+import * as minio from "minio";
 import { MINIO_BUCKET_NAME, NodeFile, minioClient } from "./minio";
 
 // https://github.com/minio/minio-js
@@ -26,7 +26,7 @@ export async function uploadToMinioServer(
     // putObject(bucketName: string, objectName: string, stream: ReadableStream | Buffer | string, metaData?: ItemBucketMetadata): Promise<UploadedObjectInfo>;
     // fPutObject(bucketName: string, objectName: string, filePath: string, metaData?: ItemBucketMetadata): Promise<UploadedObjectInfo>;
 
-    const client = new Client({
+    const client = new minio.Client({
       endPoint: 'localhost',
       port: 9040,
       useSSL: false,
@@ -36,8 +36,8 @@ export async function uploadToMinioServer(
 
 
 
-    const data: UploadedObjectInfo = await client.putObject(MINIO_BUCKET_NAME, file_key, bodyFile);
-    // const data = null;
+    const data = await client.putObject(MINIO_BUCKET_NAME, file_key, bodyFile);
+
 
 
     console.log("🚀 ~ uploadToMINIO ~ data:", data);
