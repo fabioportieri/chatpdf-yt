@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { UserButton, auth } from "@clerk/nextjs";
+
 import Link from "next/link";
 import { ArrowRight, LogIn } from "lucide-react";
 import FileUpload from "@/components/FileUpload";
@@ -8,9 +8,12 @@ import SubscriptionButton from "@/components/SubscriptionButton";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
 
 export default async function Home() {
-  const { userId } = await auth();
+  const session = await auth();
+  const userId = session?.user?.id;
+
   const isAuth = !!userId;
   const isPro = await checkSubscription();
   let firstChat;
@@ -26,7 +29,7 @@ export default async function Home() {
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center">
             <h1 className="mr-3 text-5xl font-semibold">Chat with any PDF</h1>
-            <UserButton afterSignOutUrl="/" />
+            {/* <UserButton afterSignOutUrl="/" /> */}
           </div>
 
           <div className="flex mt-2">

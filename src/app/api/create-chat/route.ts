@@ -1,13 +1,22 @@
-import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { prepareChat } from "./prepare-chat";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
+import { NextApiRequest, NextApiResponse } from "next";
+// TODO NEXTAUTH
 
 // /api/create-chat
 export async function POST(req: Request, res: Response) {
-  const { userId } = await auth();
-  if (!userId) {
+
+  const session = await auth();
+  if (!session || !session.user.id) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  const userId = session.user.id;
+  console.log("🚀 ~ createChat session:", session);
+
+
   try {
     const body = await req.json();
     const { file_key, file_name } = body;

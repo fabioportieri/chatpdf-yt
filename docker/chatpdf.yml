@@ -1,0 +1,29 @@
+version: "3.8"
+
+# TODO metti le env e cambia porta
+
+services:
+  chatgpt-turbo:
+    # container_name: chatgpt-turbo
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        OPENAI_KEY: ${OPENAI_KEY}
+        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+        KEYCLOAK_SECRET: ${KEYCLOAK_SECRET}
+        KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+        KEYCLOAK_ID: ${KEYCLOAK_ID}
+    restart: always
+    environment:
+      - NEXTAUTH_URL=http://localhost:3002
+    env_file:
+      - .env.production.local
+    ports:
+      - 3002:3002
+    networks:
+      - chatpdf_net
+networks:
+  chatpdf_net:
+    driver: bridge
+    name: chatpdf_net

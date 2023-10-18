@@ -1,5 +1,7 @@
 "use client";
-import { uploadToS3Client } from "@/lib/s3-upload-client";
+// import { uploadToMinioServer } from "@/lib/minio-upload";
+import { uploadToMinioClient } from "@/lib/minio-upload-client";
+// import { uploadToS3Client } from "@/lib/s3-upload-client";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Inbox, Loader2 } from "lucide-react";
@@ -42,7 +44,7 @@ const FileUpload = () => {
 
       try {
         setUploading(true);
-        const data = await uploadToS3Client(file);
+        const data = await uploadToMinioClient(file);
         console.log("meow", data);
         if (!data?.file_key || !data.file_name) {
           toast.error("Something went wrong");

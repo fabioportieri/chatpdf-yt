@@ -1,9 +1,10 @@
 import { accessTokenPlain, decryptData } from "@/lib/crypto";
-import { uploadToS3Server } from "@/lib/s3-upload-server";
 import axios from "axios";
 import { UUID } from "crypto";
 import { NextResponse } from "next/server";
 import { prepareChat } from "../create-chat/prepare-chat";
+import { uploadToMinioServer } from "@/lib/minio-upload";
+import { NodeFile } from "@/lib/minio";
 
 export type LoadPdfPayload = {
   buffer: Buffer;
@@ -96,7 +97,7 @@ async function runJob(
   };
 
   try {
-    fileUploadedData = await uploadToS3Server(file);
+    fileUploadedData = await uploadToMinioServer(file);
   } catch (error) {
     console.error("error on load-pdf::uploadToS3", error);
     //   send NEGATIVE response to webhook since job completed with errors
@@ -240,30 +241,4 @@ function validatePDFFile(
   }
 
   return file;
-}
-
-// this class simulate WebApi File class since nodejs does not have it.
-export class NodeFile {
-  blob: Blob;
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-
-  constructor(
-    blob: Blob,
-    name: string,
-    options: { type?: string; lastModified?: number } = {}
-  ) {
-    // super([blob], name, options);
-    this.blob = blob;
-    this.name = name;
-    this.size = blob.size;
-    this.type = options.type || "";
-    this.lastModified = options.lastModified || Date.now();
-  }
-
-  arrayBuffer(): Promise<ArrayBuffer> {
-    return this.blob.arrayBuffer();
-  }
 }

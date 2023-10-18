@@ -3,20 +3,25 @@
 import { db } from "@/lib/db";
 import { userSubscriptions } from "@/lib/db/schema";
 import { stripe } from "@/lib/stripe";
-import { auth, currentUser } from "@clerk/nextjs";
 import { eq } from "drizzle-orm";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 
 const return_url = process.env.NEXT_BASE_URL + "/";
 
 export async function GET() {
   try {
-    const { userId } = await auth();
-    const user = await currentUser();
 
-    if (!userId) {
-      return new NextResponse("unauthorized", { status: 401 });
+    const session = await auth();
+    if (!session || !session.user.id) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
+    const userId = session.user.id;
+    const userEmail = session?.user?.email;
+    console.log("🚀 ~ stripe session:", session);
+
 
     const _userSubscriptions = await db
       .select()
@@ -38,7 +43,7 @@ export async function GET() {
       payment_method_types: ["card"],
       mode: "subscription",
       billing_address_collection: "auto",
-      customer_email: user?.emailAddresses[0].emailAddress,
+      customer_email: userEmail,
       line_items: [
         {
           price_data: {

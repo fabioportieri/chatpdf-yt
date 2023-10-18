@@ -1,18 +1,25 @@
-import { downloadFromS3AndConvertToBase64 } from "@/lib/s3-server";
-import { auth } from "@clerk/nextjs";
+import { downloadFromMinioAndConvertToBlob } from "@/lib/minio-server";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { auth } from "@/lib/auth";
 
 // https://github.com/vercel/next.js/discussions/50078
 
 // /api/download-pdf
 export async function POST(req: Request, res: Response) {
 
+  const session = await auth();
+  if (!session || !session.user.id) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  console.log("🚀 ~ download-pdf session:", session);
+
   try {
     const body = await req.json();
     const { file_key } = body;
 
 
-    const blob = await downloadFromS3AndConvertToBase64(file_key);
+    const blob = await downloadFromMinioAndConvertToBlob(file_key);
 
     const headers = new Headers();
 

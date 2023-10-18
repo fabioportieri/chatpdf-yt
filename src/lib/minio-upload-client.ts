@@ -1,14 +1,14 @@
 
 import { FILE_KEY_SEPARATOR } from "./utils";
 import { Client, UploadedObjectInfo } from 'minio';
-import { MINIO_BUCKET_NAME, NodeFile, minioClient } from "./minio";
+// import { MINIO_BUCKET_NAME, NodeFile, minioClient } from "./minio";
 
 // https://github.com/minio/minio-js
 // https://min.io/docs/minio/linux/developers/javascript/API.html
 
 
-export async function uploadToMinioServer(
-  file: NodeFile | File
+export async function uploadToMinioClient(
+  file: File
 ): Promise<{ file_key: string; file_name: string }> {
   try {
 
@@ -36,7 +36,7 @@ export async function uploadToMinioServer(
 
 
 
-    const data: UploadedObjectInfo = await client.putObject(MINIO_BUCKET_NAME, file_key, bodyFile);
+    const data: UploadedObjectInfo = await client.putObject("chatpdf-bucket", file_key, bodyFile);
     // const data = null;
 
 

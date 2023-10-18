@@ -1,5 +1,4 @@
 import { Pinecone, PineconeRecord } from "@pinecone-database/pinecone";
-import { downloadFromS3 } from "./s3-server";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import md5 from "md5";
 import {
@@ -8,6 +7,7 @@ import {
 } from "@pinecone-database/doc-splitter";
 import { getEmbeddings } from "./embeddings";
 import { convertToAscii } from "./utils";
+import { downloadFromMinio } from "./minio-server";
 
 export const getPineconeClient = () => {
   return new Pinecone({
@@ -26,7 +26,7 @@ type PDFPage = {
 export async function loadS3IntoPinecone(fileKey: string) {
   // 1. obtain the pdf -> downlaod and read from pdf
   console.log("downloading s3 into file system");
-  const file_name = await downloadFromS3(fileKey);
+  const file_name = await downloadFromMinio(fileKey);
   if (!file_name) {
     throw new Error("could not download from s3");
   }

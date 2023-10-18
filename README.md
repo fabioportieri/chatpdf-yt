@@ -93,3 +93,10 @@ su chat/route.ts, che a sua volta chiama il chroma.ts, pero' togliendolo ho erro
 
 
 TODO nut-fe, mettere progress, e non mi ha fatto il polling da linux dopo il caricamento del file
+
+
+tool per risolvere dip. circolari: 
+dpdm src/lib/minio-upload.ts
+
+
+niente, l'unica e' creare una api per l upload sul minio, minio non e' compatibile con i client component

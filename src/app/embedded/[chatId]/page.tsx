@@ -1,8 +1,10 @@
 import ChatComponent from "@/components/ChatComponent";
 import PDFViewer from "@/components/PDFViewer";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq, ilike } from "drizzle-orm";
+import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -15,6 +17,15 @@ export const dynamic = "auto";
 export const fetchCache = "force-no-store"; // NECESSARIO ALTRIMENTI DB PRENDE DATI VECCHI
 
 const EmbeddedChatPage = async ({ params: { chatId } }: Props) => {
+  const session = await auth();
+  if (!session || !session.user.id) {
+    return redirect("/error");
+  }
+  const userIdFromSession = session.user.id;
+  console.log("🚀 ~ createChat session:", session);
+
+  console.log("🚀 ~ file DEBUGGING embedded session:", session);
+
   const chat = await db
     .select()
     .from(chats)

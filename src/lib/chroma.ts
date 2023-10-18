@@ -2,7 +2,6 @@
 import * as chromadb from "chromadb";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import md5 from "md5";
-import { downloadFromS3 } from "./s3-server";
 // import {
 //   Document,
 //   RecursiveCharacterTextSplitter,
@@ -13,6 +12,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 import { getEmbeddings } from "./embeddings";
 import { FILE_KEY_SEPARATOR, convertToAscii } from "./utils";
+import { downloadFromMinio } from "./minio-server";
 
 export const getChromaClient = () => {
   // return new chromadb.ChromaClient({
@@ -28,12 +28,12 @@ type PDFPage = {
   };
 };
 
-export async function loadS3IntoChromaDB(fileKey: string) {
+export async function loadMinioIntoChromaDB(fileKey: string) {
   // 1. obtain the pdf -> downlaod and read from pdf
-  console.log("downloading s3 into file system");
-  const file_name = await downloadFromS3(fileKey);
+  console.log("downloading minio into file system");
+  const file_name = await downloadFromMinio(fileKey);
   if (!file_name) {
-    throw new Error("could not download from s3");
+    throw new Error("could not download from minio");
   }
   console.log("loading pdf into memory" + file_name);
   const loader = new PDFLoader(file_name);

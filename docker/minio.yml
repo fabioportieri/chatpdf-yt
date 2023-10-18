@@ -2,18 +2,21 @@ version: "3.8"
 
 services:
   minio:
-    image: quay.io/minio/minio
+    image: minio/minio
     ports:
       - "9040:9000"
       - "9041:9001"
     volumes:
-      - ./minio-data:/data
+      - minio_data:/data
     environment:
       MINIO_ROOT_USER: wKoxIXEmEX00OwOJ
       MINIO_ROOT_PASSWORD: xL9.CaGNR#nIEZ0m=NoD#pwX8nwFNM7e
     command: server --console-address ":9001" /data
     networks:
       - chatpdf_net
+volumes:
+  minio_data:
+    driver: local      
 networks:
   chatpdf_net:
     driver: bridge
