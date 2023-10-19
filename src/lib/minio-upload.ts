@@ -10,7 +10,7 @@ export async function uploadToMinioServer(
   try {
     const file_key =
       "uploads/" +
-      Date.now().toString() +
+      // Date.now().toString() +
       FILE_KEY_SEPARATOR +
       file.name.replace(" ", "-");
 

@@ -54,6 +54,23 @@ services:
       chatpdf_net:
         aliases:
           - ${PREFIX}-minio
+  minio-init:
+    image: minio/mc
+    command:
+      [
+        "sh",
+        "-c",
+        "chmod +x /docker-entrypoint-initdb.d/init_minio.sh && /docker-entrypoint-initdb.d/init_minio.sh",
+      ]
+    volumes:
+      - ./minio/init_minio.sh:/docker-entrypoint-initdb.d/init_minio.sh
+    entrypoint: [""]
+    depends_on:
+      - minio
+    networks:
+      nut_net:
+        aliases:
+          - chatpdf-minio-init
   chromadb:
     container_name: ${PREFIX}-chromadb
     image: ghcr.io/chroma-core/chroma:latest
