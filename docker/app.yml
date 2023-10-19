@@ -32,6 +32,7 @@ services:
       - .env
     ports:
       - 3002:3002
+    image: ${CHATPDF_IMAGE_NAME}:${CHATPDF_IMAGE_VERSION}
     networks:
       chatpdf_net:
         aliases:
