@@ -1,10 +1,11 @@
+import { auth } from "@/lib/auth";
 import { accessTokenPlain, decryptData } from "@/lib/crypto";
+import { NodeFile } from "@/lib/minio";
+import { uploadToMinioServer } from "@/lib/minio-upload";
 import axios from "axios";
 import { UUID } from "crypto";
 import { NextResponse } from "next/server";
 import { prepareChat } from "../create-chat/prepare-chat";
-import { uploadToMinioServer } from "@/lib/minio-upload";
-import { NodeFile } from "@/lib/minio";
 
 export type LoadPdfPayload = {
   buffer: Buffer;
@@ -15,9 +16,19 @@ export type LoadPdfPayload = {
   callback: string;
   accessToken: string;
 };
+// at the end i'm using keycloack so the access token is not needed, keeping it for future reference
+// to avoid keycloack we could pass a jwt token with signature and expiry as an access token... todo, since oauth2 auth
+// does not behave correctly on mobile and chrome incognito when the app is embedded in iframe, OR just use webpack module federation
 
 export async function POST(req: Request, res: Response) {
-  console.log("/load-pdf!");
+  console.log("/external-load-pdf!");
+
+  const session = await auth();
+  if (!session || !session.user.id) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  console.log("🚀 ~ external-load-pdf session:", session);
+
   const { file, filename, mimetype, userId, requestId, callback, accessToken } =
     await req.json();
   console.log(

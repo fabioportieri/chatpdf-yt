@@ -3,22 +3,35 @@ version: "3.8"
 # TODO metti le env e cambia porta
 
 services:
-  chatgpt-turbo:
+  chatpdf:
     # container_name: chatgpt-turbo
     build:
-      context: ./
+      context: ../
       dockerfile: Dockerfile
       args:
-        OPENAI_KEY: ${OPENAI_KEY}
+        OPENAI_API_KEY: ${OPENAI_API_KEY}
         NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+        NEXTAUTH_URL: ${NEXTAUTH_URL}
         KEYCLOAK_SECRET: ${KEYCLOAK_SECRET}
         KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
         KEYCLOAK_ID: ${KEYCLOAK_ID}
+        DATABASE_URL: ${DATABASE_URL}
+        CHROMA_API_IMPL: ${CHROMA_API_IMPL}
+        CHROMA_SERVER_HOST: ${CHROMA_SERVER_HOST}
+        CHROMA_SERVER_HTTP_PORT: ${CHROMA_SERVER_HTTP_PORT}
+        NUTPROJECT_ACCESS_TOKEN_PLAIN: ${NUTPROJECT_ACCESS_TOKEN_PLAIN}
+        NUTPROJECT_ACCESS_TOKEN_SECRET: ${NUTPROJECT_ACCESS_TOKEN_SECRET}
+        NUTPROJECT_ACCESS_TOKEN_IV: ${NUTPROJECT_ACCESS_TOKEN_IV}
+        MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+        MINIO_PORT: ${MINIO_PORT}
+        MINIO_USESSL: ${MINIO_USESSL}
+        MINIO_ACCESSKEY: ${MINIO_ACCESSKEY}
+        MINIO_SECRETKEY: ${MINIO_SECRETKEY}
+        MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+        PORT: ${PORT}
     restart: always
-    environment:
-      - NEXTAUTH_URL=http://localhost:3002
     env_file:
-      - .env.production.local
+      - .env
     ports:
       - 3002:3002
     networks:

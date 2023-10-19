@@ -1,7 +1,42 @@
 version: "3.8"
 
 services:
+  chatpdf-app:
+  container_name: ${PREFIX}-app
+  build:
+    context: ../
+    dockerfile: Dockerfile
+    args:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      KEYCLOAK_SECRET: ${KEYCLOAK_SECRET}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      KEYCLOAK_ID: ${KEYCLOAK_ID}
+      DATABASE_URL: ${DATABASE_URL}
+      CHROMA_API_IMPL: ${CHROMA_API_IMPL}
+      CHROMA_SERVER_HOST: ${CHROMA_SERVER_HOST}
+      CHROMA_SERVER_HTTP_PORT: ${CHROMA_SERVER_HTTP_PORT}
+      NUTPROJECT_ACCESS_TOKEN_PLAIN: ${NUTPROJECT_ACCESS_TOKEN_PLAIN}
+      NUTPROJECT_ACCESS_TOKEN_SECRET: ${NUTPROJECT_ACCESS_TOKEN_SECRET}
+      NUTPROJECT_ACCESS_TOKEN_IV: ${NUTPROJECT_ACCESS_TOKEN_IV}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_USESSL: ${MINIO_USESSL}
+      MINIO_ACCESSKEY: ${MINIO_ACCESSKEY}
+      MINIO_SECRETKEY: ${MINIO_SECRETKEY}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      PORT: ${PORT}
+  restart: always
+  env_file:
+    - .env
+  ports:
+    - 3002:3002
+  networks:
+    - ${NETWORK}
+
   minio:
+    container_name: ${PREFIX}-minio
     image: minio/minio
     ports:
       - "9040:9000"
@@ -15,6 +50,7 @@ services:
     networks:
       - ${NETWORK}
   chromadb:
+    container_name: ${PREFIX}-chromadb
     image: ghcr.io/chroma-core/chroma:latest
     volumes:
       - chroma_persistent_folder:/chroma/chroma/

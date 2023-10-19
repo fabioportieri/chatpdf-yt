@@ -1,19 +1,16 @@
 // /api/stripe
 
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { userSubscriptions } from "@/lib/db/schema";
 import { stripe } from "@/lib/stripe";
 import { eq } from "drizzle-orm";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
-import { auth } from "@/lib/auth";
 
-const return_url = process.env.NEXT_BASE_URL + "/";
+const return_url = process.env.NEXTAUTH_URL + "/";
 
 export async function GET() {
   try {
-
     const session = await auth();
     if (!session || !session.user.id) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -21,7 +18,6 @@ export async function GET() {
     const userId = session.user.id;
     const userEmail = session?.user?.email;
     console.log("🚀 ~ stripe session:", session);
-
 
     const _userSubscriptions = await db
       .select()

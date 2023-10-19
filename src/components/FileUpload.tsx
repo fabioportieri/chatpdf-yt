@@ -1,6 +1,5 @@
 "use client";
 
-import { uploadToMinioServer } from "@/lib/minio-upload";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Inbox, Loader2 } from "lucide-react";
@@ -38,9 +37,9 @@ const FileUpload = () => {
         formData.append("file", file);
         const response = await axios.post("/api/upload-pdf", formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-      });
+            "Content-Type": "multipart/form-data",
+          },
+        });
         return response.data;
       },
     });
@@ -60,9 +59,8 @@ const FileUpload = () => {
         setUploading(true);
 
         mutateUploadPdf(file, {
-          onSuccess: ({data}) => {
+          onSuccess: ({ data }) => {
             console.log("meow", data);
-            // questa IF mi va uscire??
             if (!data?.file_key || !data?.file_name) {
               toast.error("Something went wrong");
               return;

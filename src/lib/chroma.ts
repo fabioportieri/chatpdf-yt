@@ -11,14 +11,14 @@ import { Document } from "langchain/document";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 import { getEmbeddings } from "./embeddings";
-import { FILE_KEY_SEPARATOR, convertToAscii } from "./utils";
 import { downloadFromMinio } from "./minio-server";
+import { FILE_KEY_SEPARATOR, convertToAscii } from "./utils";
 
 export const getChromaClient = () => {
-  // return new chromadb.ChromaClient({
-  //   path: process.env.NEXT_BASE_URL
-  // });
-  return new chromadb.ChromaClient({ path: 'http://localhost:8001' });
+  return new chromadb.ChromaClient({
+    path: `http://${process.env.CHROMA_SERVER_HOST!}:${process.env
+      .CHROMA_SERVER_HTTP_PORT!}`,
+  });
 };
 
 type PDFPage = {
@@ -66,6 +66,7 @@ export async function loadMinioIntoChromaDB(fileKey: string) {
   try {
     let collFound = await client.getCollection({ name: collectionName });
     if (collFound) await client.deleteCollection({ name: collectionName });
+    // TODO importante invece di cancellare collection se gia esiste recupera e risparmia non mettendo nuovamente gli embeddings!
   } catch (error) {
     console.log("collection does not exists, no need to delete it");
   }

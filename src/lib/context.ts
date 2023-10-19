@@ -1,4 +1,4 @@
-import { ChromaClient } from "chromadb";
+import { getChromaClient } from "./chroma";
 import { getEmbeddings } from "./embeddings";
 import { FILE_KEY_SEPARATOR } from "./utils";
 
@@ -24,7 +24,7 @@ export async function getMatchesFromEmbeddings(
     // TODO crea una collection name anche se non viene da NUTPROJECT ! (standalone)
     const collectionName = fileKey.split(FILE_KEY_SEPARATOR)[1];
 
-    const client = new ChromaClient();
+    const client = getChromaClient();
     let collection = await client.getCollection({
       name: collectionName,
     });

@@ -90,12 +90,7 @@ il problema era l'edge runtime:
 // export const runtime = "edge";
 su chat/route.ts, che a sua volta chiama il chroma.ts, pero' togliendolo ho errori strani:
 
-
-
-TODO nut-fe, mettere progress, e non mi ha fatto il polling da linux dopo il caricamento del file
-
-
-tool per risolvere dip. circolari: 
+tool per risolvere dip. circolari:
 dpdm src/lib/minio-upload.ts
 
-problema con il filename collection...
+TODO importante invece di cancellare collection se gia esiste recupera e risparmia non mettendo nuovamente gli embeddings!

@@ -1,8 +1,6 @@
 import { loadMinioIntoChromaDB } from "@/lib/chroma";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { getS3Url } from "@/lib/s3-upload-client";
-
 // logic shared between /create-chat api and /load-pdf
 export async function prepareChat(
   userId: string,
@@ -18,7 +16,7 @@ export async function prepareChat(
     .values({
       fileKey: file_key,
       pdfName: file_name,
-      pdfUrl: getS3Url(file_key),
+      pdfUrl: "TODO://" + file_key,
       userId,
     })
     .returning({
