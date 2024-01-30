@@ -7,7 +7,7 @@ export default {
   schema: "./src/lib/db/schema.ts",
   verbose: true,
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL ?? "fdfsdfsdfdsfdsf",
+    connectionString: process.env.DATABASE_URL!,
   },
 } satisfies Config;
 
