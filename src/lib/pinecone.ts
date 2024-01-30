@@ -1,13 +1,13 @@
-import { Pinecone, PineconeRecord } from "@pinecone-database/pinecone";
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-import md5 from "md5";
 import {
   Document,
   RecursiveCharacterTextSplitter,
 } from "@pinecone-database/doc-splitter";
+import { Pinecone, PineconeRecord } from "@pinecone-database/pinecone";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import md5 from "md5";
 import { getEmbeddings } from "./embeddings";
-import { convertToAscii } from "./utils";
 import { downloadFromMinio } from "./minio-server";
+import { convertToAscii } from "./utils";
 
 export const getPineconeClient = () => {
   return new Pinecone({
@@ -23,6 +23,10 @@ type PDFPage = {
   };
 };
 
+/**
+ *
+ * @deprecated
+ */
 export async function loadS3IntoPinecone(fileKey: string) {
   // 1. obtain the pdf -> downlaod and read from pdf
   console.log("downloading s3 into file system");
