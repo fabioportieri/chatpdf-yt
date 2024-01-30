@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Message } from "ai";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import BlueSpinner from "./BlueSpinner";
 
 type Props = { pdf_url: string; file_key: string };
 
@@ -33,7 +33,10 @@ const PDFViewer = ({ pdf_url, file_key }: Props) => {
   }, [data]);
 
   return (
-    <>{blobUrl && <iframe src={blobUrl} className="w-full h-full"></iframe>}</>
+    <>
+      {isLoading && <BlueSpinner />}
+      {blobUrl && <iframe src={blobUrl} className="w-full h-full"></iframe>}
+    </>
   );
 };
 

@@ -12,7 +12,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 import { getEmbeddings } from "./embeddings";
 import { downloadFromMinio } from "./minio-server";
-import { FILE_KEY_SEPARATOR, convertToAscii } from "./utils";
+import { FILE_KEY_SEPARATOR } from "./utils";
 
 export const getChromaClient = () => {
   return new chromadb.ChromaClient({
@@ -63,39 +63,40 @@ export async function loadMinioIntoChromaDB(fileKey: string) {
     collectionName
   );
 
-  try {
-    let collFound = await client.getCollection({ name: collectionName });
-    if (collFound) await client.deleteCollection({ name: collectionName });
-    // TODO importante invece di cancellare collection se gia esiste recupera e risparmia non mettendo nuovamente gli embeddings!
-  } catch (error) {
-    console.log("collection does not exists, no need to delete it");
+  let collFound = await client.getCollection({ name: collectionName });
+  if (!collFound) {
+    // create collection https://docs.trychroma.com/usage-guide?lang=js
+    let collection = await client.createCollection({
+      name: collectionName,
+      metadata: { "hnsw:space": "cosine" },
+    });
+    console.log(
+      "🚀 chroma.ts ~ creating new collection:",
+      collection,
+      " with name ",
+      collectionName
+    );
+
+    // TODO add
+    await collection.add({
+      // ids: ["id1", "id2", "id3", ...],
+      // embeddings: [[1.1, 2.3, 3.2], [4.5, 6.9, 4.4], [1.1, 2.3, 3.2], ...],
+      // metadatas: [{"chapter": "3", "verse": "16"}, {"chapter": "3", "verse": "5"}, {"chapter": "29", "verse": "11"}, ...],
+      ids: vectorsWrapper.map((vector) => vector.id),
+      embeddings: vectorsWrapper.map((vector) => vector.embeddings),
+      metadatas: vectorsWrapper.map((vector) => vector.metadata),
+      documents: documents.flat().map((doc) => doc.pageContent),
+    });
+
+    console.log("collection, added num embeddings: ", documents.flat().length);
+  } else {
+    console.log(
+      "collection ",
+      collectionName,
+      "already found, no embeddings added"
+    );
   }
 
-  // create collection https://docs.trychroma.com/usage-guide?lang=js
-
-  let collection = await client.createCollection({
-    name: collectionName,
-    metadata: { "hnsw:space": "cosine" },
-  });
-  console.log(
-    "🚀 loadS3IntoChromaDB ~ collection:",
-    collection,
-    " with name ",
-    convertToAscii(fileKey)
-  );
-
-  // TODO add
-  await collection.add({
-    // ids: ["id1", "id2", "id3", ...],
-    // embeddings: [[1.1, 2.3, 3.2], [4.5, 6.9, 4.4], [1.1, 2.3, 3.2], ...],
-    // metadatas: [{"chapter": "3", "verse": "16"}, {"chapter": "3", "verse": "5"}, {"chapter": "29", "verse": "11"}, ...],
-    ids: vectorsWrapper.map((vector) => vector.id),
-    embeddings: vectorsWrapper.map((vector) => vector.embeddings),
-    metadatas: vectorsWrapper.map((vector) => vector.metadata),
-    documents: documents.flat().map((doc) => doc.pageContent),
-  });
-
-  console.log("collection added embeddings: ", documents);
   return documents[0];
 }
 

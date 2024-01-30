@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq, ilike } from "drizzle-orm";
-import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -38,6 +37,7 @@ const EmbeddedChatPage = async ({ params: { chatId } }: Props) => {
   const userId = chat[0].userId;
   const file_key = chat[0].fileKey;
 
+  console.log("🚀 ~ chat query done:", chat);
   // should work with "eq", using "ilike" for this bug, prob. era solo problema di cache, togli TODO
   // https://stackoverflow.com/questions/71295272/where-on-normal-varchar-column-fails-for-some-values-but-works-with-trim-lower
   const _chats = await db

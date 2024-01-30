@@ -10,7 +10,7 @@
     "chromadb": "docker pull chromadb/chroma && docker run -p 8000:8000 chromadb/chroma"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.6.0",
+    "@neondatabase/serverless": "^0.6.1",
     "@pinecone-database/doc-splitter": "^0.0.1",
     "@pinecone-database/pinecone": "^1.0.1",
     "@radix-ui/react-slot": "^1.0.2",
@@ -55,9 +55,6 @@
   "devDependencies": {
     "@types/crypto-js": "^4.1.2",
     "drizzle-kit": "^0.19.13"
-    
   },
-  "browser": {
- 
-  }
+  "browser": {}
 }

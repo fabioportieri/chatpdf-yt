@@ -7,7 +7,7 @@ export async function prepareChat(
   file_key: string,
   file_name: string
 ): Promise<any> {
-  console.log("filekey: ", file_key, "filename: ", file_name);
+  console.log("filekey: ", file_key, "filename: ", file_name, "userId", userId);
 
   await loadMinioIntoChromaDB(file_key);
 
