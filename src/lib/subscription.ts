@@ -1,4 +1,3 @@
-import { getServerSession } from "next-auth/next";
 import { db } from "./db";
 import { userSubscriptions } from "./db/schema";
 import { eq } from "drizzle-orm";

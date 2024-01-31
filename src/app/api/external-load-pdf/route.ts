@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { accessTokenPlain, decryptData } from "@/lib/crypto";
 import { NodeFile } from "@/lib/minio";
 import { uploadToMinioServer } from "@/lib/minio-upload";
@@ -23,11 +22,11 @@ export type LoadPdfPayload = {
 export async function POST(req: Request, res: Response) {
   console.log("/external-load-pdf!");
 
-  const session = await auth();
-  if (!session || !session.user.id) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-  console.log("🚀 ~ external-load-pdf session:", session);
+  // const session = await auth();
+  // if (!session || !session.user.id) {
+  //   return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  // }
+  console.log("🚀 ~ external-load-pdf");
 
   const { file, filename, mimetype, userId, requestId, callback, accessToken } =
     await req.json();
