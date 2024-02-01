@@ -1,17 +1,21 @@
 import { Button } from "@/components/ui/button";
 
-import Link from "next/link";
-import { ArrowRight, LogIn } from "lucide-react";
 import FileUpload from "@/components/FileUpload";
-import { checkSubscription } from "@/lib/subscription";
 import SubscriptionButton from "@/components/SubscriptionButton";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
+import { checkSubscription } from "@/lib/subscription";
 import { eq } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { ArrowRight, LogIn } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await auth();
+  if (!session || !session.user?.id) {
+    return redirect("/unauthorized");
+  }
   const userId = session?.user?.id;
 
   const isAuth = !!userId;
@@ -29,9 +33,7 @@ export default async function Home() {
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center">
             <h1 className="mr-3 text-5xl font-semibold">Chat with any PDF</h1>
-            {/* <UserButton afterSignOutUrl="/" /> */}
           </div>
-
           <div className="flex mt-2">
             {isAuth && firstChat && (
               <>
@@ -46,12 +48,10 @@ export default async function Home() {
               </>
             )}
           </div>
-
           <p className="max-w-xl mt-1 text-lg text-slate-600">
             Join millions of students, researchers and professinals to instantly
             anwer questions and understand research with AI
           </p>
-
           <div className="w-full mt-4">
             {isAuth ? (
               <FileUpload />

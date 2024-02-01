@@ -7,7 +7,7 @@ import { stripe } from "@/lib/stripe";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-const return_url = process.env.NEXTAUTH_URL + "/";
+const return_url = process.env.NEXTAUTH_URL + "/"; // non esiste piu nextauth TODO
 
 export async function GET() {
   try {
